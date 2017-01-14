@@ -37,7 +37,7 @@ pip3 install filename.whl
 
 Example:
 ```
-pip3 install .\pygame-1.9.2-cp35-cp35m-win_amd64.whl
+pip3 install ./pyglet‑1.2.4‑py3‑none‑any.whl
 ```
 
 More comprehensive guide:
