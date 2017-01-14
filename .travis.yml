@@ -1,0 +1,35 @@
+language: python
+env:
+  global:
+    - CI=true
+sudo: false
+
+matrix:
+  include:
+    - os: linux
+      python: '3.5'
+      env: 'JOB=3.5-linux'
+    - os: linux
+      python: '3.4'
+      env: 'JOB=3.4-linux'
+    - os: osx
+      language: generic
+      env: 'JOB=osx'
+    - sudo: required
+      dist: trusty
+      python: '3.5'
+      env: 'JOB=3.5-trusty'
+    - sudo: required
+      dist: precise
+      python: '3.5'
+      env: 'JOB=3.5-precise'
+
+install: ./travis/install.sh
+
+script:
+    - echo 'import src' | python3
+    - echo 'from src import game' | python3
+    - py.test
+
+notifications:
+    email: false
