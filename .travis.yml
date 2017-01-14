@@ -6,23 +6,23 @@ sudo: false
 
 matrix:
   include:
-    - os: linux
-      python: '3.5'
-      env: 'JOB=3.5-linux'
-    - os: linux
-      python: '3.4'
-      env: 'JOB=3.4-linux'
     - os: osx
       language: generic
-      env: 'JOB=osx'
+      env: 'JOB=osx-vm-python3'
+    - os: linux
+      python: '3.5'
+      env: 'JOB=linux-container-python3.5'
+    - os: linux
+      python: '3.4'
+      env: 'JOB=linux-container-python3.4'
     - sudo: required
       dist: trusty
       python: '3.5'
-      env: 'JOB=3.5-trusty'
+      env: 'JOB=ubuntu14-vm-python3.5'
     - sudo: required
       dist: precise
       python: '3.5'
-      env: 'JOB=3.5-precise'
+      env: 'JOB=ubuntu12-vm-python3.5'
 
 install: ./travis/install.sh
 
