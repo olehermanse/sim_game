@@ -1,2 +1,2 @@
-pygame==1.9.2
+pyglet==1.2.4
 pytest

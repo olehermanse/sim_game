@@ -4,9 +4,10 @@ if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
     brew install python3
     brew tap Homebrew/python
     pip3 install -U pip wheel
-    brew install sdl sdl_image sdl_mixer sdl_ttf smpeg portmidi
-    pip3 install hg+http://bitbucket.org/pygame/pygame
-    pip3 install pytest
+    pip3 install -r requirements.txt
+    #brew install sdl sdl_image sdl_mixer sdl_ttf smpeg portmidi
+    #pip3 install hg+http://bitbucket.org/pygame/pygame
+    #pip3 install pytest
 else
     # Linux
     pip3 install -U pip wheel
