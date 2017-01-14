@@ -27,13 +27,14 @@ matrix:
 install: ./travis/install.sh
 
 script:
-    - echo 'import src' | python3
-    - echo 'from src import game' | python3
+    - make dir_test
     - py.test
 
 branches:
   only:
     - "master"
+    - "ci-olehermanse"
+    - "ci-berstad"
 
 notifications:
     email: false
