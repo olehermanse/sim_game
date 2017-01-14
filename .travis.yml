@@ -31,5 +31,9 @@ script:
     - echo 'from src import game' | python3
     - py.test
 
+branches:
+  only:
+    - "master"
+
 notifications:
     email: false
