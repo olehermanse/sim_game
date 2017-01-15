@@ -7,6 +7,7 @@ __license__    = "MIT"
 # This file is subject to the terms and conditions defined in 'LICENSE'
 
 try:
+    import pyglet
     from pyglet.text import Label
     from pyglet.resource import image
 except:
@@ -30,9 +31,16 @@ class GraphicsObject:
         self.ddx = float(ddx)
         self.ddy = float(ddy)
 
-    def draw(self, surface):
+    # Sub class must override this function for drawing to work
+    def draw(self):
         raise NotImplementedError
 
+    # Can replace draw(), more optimized:
+    def batch_add(self, batch):
+        raise NotImplementedError
+
+    # Note: if you don't need acceleration and velocity
+    #       simply call set_pos instead
     def update(self, dt):
         s = self
         dt = float(dt)
@@ -69,3 +77,28 @@ class TextObject(GraphicsObject):
         super().update(dt)
         self.label.x = self.x
         self.label.y = self.y
+
+class Rectangle(GraphicsObject):
+    def __init__(self, width, height, fill=(0,0,255,255), stroke=(0,0,0,0), pos=(0,0), vel=(0,0), acc=(0,0)):
+        super().__init__(pos=pos, vel=vel, acc=acc)
+        self.w = width
+        self.h = height
+        self.stroke = stroke
+        self.fill = fill
+
+    def draw(self):
+        rect_vertices = pyglet.graphics.vertex_list(4,
+            ('v2f', (self.x,        self.y) +
+                    (self.x+self.w, self.y) +
+                    (self.x+self.w, self.y+self.h) +
+                    (self.x,        self.y+self.h)
+            ),
+            ('c4B', self.fill * 4)
+        )
+        rect_vertices.draw(pyglet.gl.GL_QUADS)
+
+        rect_vertices.colors = self.stroke * 4
+        rect_vertices.draw(pyglet.gl.GL_LINE_LOOP)
+
+    def update(self, dt):
+        super().update(dt)
