@@ -13,6 +13,24 @@ try:
 except:
     print("Warning: could not import pyglet")
 
+class Color:
+    colors = {
+        "red":   (255,0,0,255),
+        "green": (0,255,0,255),
+        "blue":  (0,0,255,255),
+        "white": (255,255,255,255),
+        "black": (0,0,0,255)
+    }
+    @classmethod
+    def get(cls, name):
+        return cls.colors[name]
+
+class Renderer:
+    @staticmethod
+    def start(window):
+        window.clear()
+        pyglet.gl.glClearColor(255,255,255,255)
+
 class GraphicsObject:
     def __init__(self, pos=(0,0), vel=(0,0), acc=(0,0)):
         self.set_pos(pos[0],pos[1])
