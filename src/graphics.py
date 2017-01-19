@@ -33,9 +33,9 @@ class Renderer:
 
 class GraphicsObject:
     def __init__(self, pos=(0,0), vel=(0,0), acc=(0,0)):
-        self.set_pos(pos[0],pos[1])
-        self.set_vel(vel[0],vel[1])
-        self.set_acc(acc[0],acc[1])
+        GraphicsObject.set_pos(self, pos[0],pos[1])
+        GraphicsObject.set_vel(self, vel[0],vel[1])
+        GraphicsObject.set_acc(self, acc[0],acc[1])
 
     def set_pos(self, x,y):
         self.x = float(x)
@@ -48,6 +48,10 @@ class GraphicsObject:
     def set_acc(self, ddx, ddy):
         self.ddx = float(ddx)
         self.ddy = float(ddy)
+
+    def move_pos(self, dx, dy):
+        self.x += dx
+        self.y += dy
 
     # Sub class must override this function for drawing to work
     def draw(self):
@@ -68,6 +72,7 @@ class GraphicsObject:
                                float(s.dx + dt*s.ddx),\
                                float(s.dy + dt*s.ddy)
 
+# TODO: Make this inherit from Rectangle
 class SpriteObject(GraphicsObject):
     def __init__(self, path, pos=(0,0), vel=(0,0), acc=(0,0), center=False):
         super().__init__(pos, vel, acc)
@@ -96,15 +101,29 @@ class TextObject(GraphicsObject):
         self.label.x = self.x
         self.label.y = self.y
 
+#TODO: make colored rect separate class
 class Rectangle(GraphicsObject):
-    def __init__(self, width, height, fill=(0,0,255,255), stroke=(0,0,0,0), pos=(0,0), vel=(0,0), acc=(0,0)):
-        super().__init__(pos=pos, vel=vel, acc=acc)
+    def __init__(self, width, height, fill=(128,128,128,255), stroke=(0,0,0,0), pos=(0,0), vel=(0,0), acc=(0,0), centered=False):
+        self.centered = centered
         self.w = width
         self.h = height
+        super().__init__(pos=pos, vel=vel, acc=acc)
+        if centered:
+            Rectangle.set_pos(self, pos[0], pos[1])
         self.stroke = stroke
         self.fill = fill
 
+    def set_pos(self, x,y):
+        super().set_pos(x,y)
+        if self.centered:
+            self.x -= self.w/2
+            self.y -= self.h/2
+
+    def set_fill(self, fill):
+        self.fill = fill
+
     def draw(self):
+        pyglet.gl.glLineWidth(4)
         rect_vertices = pyglet.graphics.vertex_list(4,
             ('v2f', (self.x,        self.y) +
                     (self.x+self.w, self.y) +
