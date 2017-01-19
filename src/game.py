@@ -7,23 +7,27 @@ __license__    = "MIT"
 # This file is subject to the terms and conditions defined in 'LICENSE'
 
 from graphics import SpriteObject, TextObject, Rectangle, Renderer
+from robot import Robot
+
+import random
 
 class Game:
     def __init__(self, window):
         self.window = window
-        #self.cat = SpriteObject('kitten.jpg', center=True, pos=(400,300), vel=(0,100), acc=(0,-100))
-        #self.message = TextObject("Hello, world", size=32, pos=(400,300), vel=(0,100), acc=(0,-100))
-        self.rectangle = Rectangle(100,20, stroke=(255,255,255,255), pos=(400,300), vel=(0,100), acc=(0,-100))
+        self.robots = []
+        for _ in range(4):
+            x = random.randint(50,750)
+            y = random.randint(50,550)
+            r = Robot(pos=(x,y), stroke=(0,0,0,255), fill=(128,128,128,255),
+                               centered=True)
+            self.robots.append(r)
 
     # TODO: change to batch drawing for performance
     def draw(self):
         Renderer.start(self.window)
-
-        #self.cat.draw()
-        #self.message.draw()
-        self.rectangle.draw()
+        for r in self.robots:
+            r.draw()
 
     def update(self, dt):
-        #self.cat.update(dt)
-        #self.message.update(dt)
-        self.rectangle.update(dt)
+        for r in self.robots:
+            r.update(dt)
