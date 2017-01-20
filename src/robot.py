@@ -6,7 +6,7 @@ __author__   = ["Ole Herman Schumacher Elgesem", "Tor Jan Derek Berstad"]
 __license__  = "MIT"
 # This file is subject to the terms and conditions defined in 'LICENSE'
 
-from graphics import Rectangle
+from graphics import PhysicsRectangle, Rectangle
 from collections import UserDict
 import random
 
@@ -90,7 +90,7 @@ class RobotDNA(UserDict):
         return ((stop-start)*self.real[key] + start)
 
 # TODO: Separate out a cluster object class for multiple rect objects like this
-class Robot(Rectangle):
+class Robot(PhysicsRectangle):
     def __init__(self, *args, stroke=(0,0,0,255), fill=(128,128,128,255), **kwargs):
         self.dna = RobotDNA()
         ratio = (1/2**(self.dna.get_mapped_real("ratio",-1,1)))
@@ -113,13 +113,13 @@ class Robot(Rectangle):
 
     def set_vel(self, dx, dy):
         super().set_vel(dx,dy)
-        for part in self.body_parts:
-            part.set_vel(dx,dy)
+        # for part in self.body_parts:
+        #     part.set_vel(dx,dy)
 
     def set_acc(self, ddx, ddy):
         super().set_acc(ddx,ddy)
-        for part in self.body_parts:
-            part.set_acc(ddx,ddy)
+        # for part in self.body_parts:
+        #     part.set_acc(ddx,ddy)
 
     def move_pos(self, dx, dy):
         super().move_pos(dx,dy)
@@ -131,6 +131,10 @@ class Robot(Rectangle):
             part.draw()
 
     def update(self, dt):
+        self.ddx += random.uniform(-0.5, 0.5)
+        self.ddy += random.uniform(-0.5, 0.5)
         super().update(dt)
-        for part in self.body_parts:
-            part.update(dt)
+
+        # for part in self.body_parts:
+        #     part.set_acc(self.ddx, self.ddy)
+        #     part.update(dt)
