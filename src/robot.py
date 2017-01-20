@@ -19,15 +19,22 @@ class RobotDNA(UserDict):
             "red": 0.5,
             "green": 0.5,
             "blue": 0.5,
-            "size": 0.5
+            "size": 0.5,
+            "ratio": 0.5
         }
 
         for key, value in kwargs.items():
             if type(value) is bool:
-                self.binary[key] = value
+                if key in self.binary:
+                    self.binary[key] = value
+                else:
+                    raise NotImplementedError
             else:
-                assert value >= 0 and value <= 1
-                self.real[key] = float(value)
+                if key in self.real:
+                    assert value >= 0 and value <= 1
+                    self.real[key] = float(value)
+                else:
+                    raise NotImplementedError
 
         self.master = {"binary": self.binary, "real": self.real}
         super().__init__(self.master)
@@ -50,12 +57,16 @@ class RobotDNA(UserDict):
         for key in self.real:
             self.real[key] = random.random()
 
+    def get_mapped_real(self,key, start, stop):
+        return ((stop-start)*self.real[key] + start)
+
 # TODO: Separate out a cluster object class for multiple rect objects like this
 class Robot(Rectangle):
     def __init__(self, *args, stroke=(0,0,0,255), fill=(128,128,128,255), **kwargs):
         self.dna = RobotDNA()
-        width = 50+self.dna.real["size"]*50
-        height = 50+self.dna.real["size"]*50
+        ratio = (1/2**(self.dna.get_mapped_real("ratio",-1,1)))
+        width = self.dna.get_mapped_real("size",50,100)
+        height = width*ratio
         super().__init__(width, height, *args, **kwargs)
         self.body = Rectangle(width/3, height/3, *args, **kwargs)
         self.head = Rectangle(width*0.8, height*0.8, *args, **kwargs)
