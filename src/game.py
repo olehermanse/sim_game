@@ -18,9 +18,12 @@ class Game:
         for _ in range(4):
             x = random.randint(50,750)
             y = random.randint(50,550)
-            r = Robot(pos=(x,y), stroke=(0,0,0,255), fill=(128,128,128,255),
-                               centered=True)
-            self.robots.append(r)
+            self.make_robot(x,y)
+
+    def make_robot(self, x, y):
+        r = Robot(pos=(x,y), stroke=(0,0,0,255), fill=(128,128,128,255),
+                           centered=True)
+        self.robots.append(r)
 
     # TODO: change to batch drawing for performance
     def draw(self):
@@ -31,3 +34,16 @@ class Game:
     def update(self, dt):
         for r in self.robots:
             r.update(dt)
+
+    def mouse_motion(self, x, y, dx, dy):
+        pass
+
+    def mouse_press(self, x, y, button, modifiers):
+        pass
+
+    def mouse_release(self, x, y, button, modifiers):
+        if button == 1:
+            self.make_robot(x,y)
+
+    def mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        pass
