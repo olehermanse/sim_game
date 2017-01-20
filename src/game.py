@@ -9,6 +9,7 @@ __license__    = "MIT"
 from graphics import SpriteObject, TextObject, Rectangle, Renderer
 from robot import Robot
 
+
 import random
 
 class Game:
