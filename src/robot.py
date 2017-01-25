@@ -11,7 +11,7 @@ from collections import UserDict
 import random
 
 class RobotDNA(UserDict):
-    def __init__(self, **kwargs):
+    def __init__(self, randomize=True, **kwargs):
         self.binary = {  # Binary, true or false genes
 
         }
@@ -22,27 +22,55 @@ class RobotDNA(UserDict):
             "size": 0.5,
             "ratio": 0.5
         }
+        if randomize:
+            self.randomize()
+        self.set(**kwargs)
 
+        self.master = {"binary": self.binary, "real": self.real}
+        super().__init__(self.master)
+
+    def set(self, **kwargs):
         for key, value in kwargs.items():
             if type(value) is bool:
                 if key in self.binary:
                     self.binary[key] = value
                 else:
-                    raise NotImplementedError
+                    raise KeyError
             else:
                 if key in self.real:
                     assert value >= 0 and value <= 1
                     self.real[key] = float(value)
                 else:
-                    raise NotImplementedError
+                    raise KeyError
 
-        self.master = {"binary": self.binary, "real": self.real}
-        super().__init__(self.master)
-        self.randomize()
+    def get(self, key):
+        # Returns a value or raises KeyError:
+        if key not in self.binary:
+            return self.real[key]
+        if key not in self.real:
+            return self.binary[key]
+
+        # key in both dicts:
+        raise RuntimeError
 
     def get_byte(self, key):
-        assert int(self.real[key]*255.99) < 256
-        return int(self.real[key]*255.99)
+        val = int(self.real[key]*255.99)
+        assert val < 256 and val >= 0
+        return val
+
+    def set_byte(self, key, val):
+        if val >= 256 or val < 0:
+            raise ValueError
+        if key not in self.real:
+            raise KeyError
+        self.real[key] = val/255.99
+
+    def set_bytes(self, **kwargs):
+        for key, value in kwargs.items():
+            if type(value) is bool:
+                raise ValueError
+            else:
+                self.set_byte(key, value)
 
     def get_color(self):
         return (
@@ -51,13 +79,14 @@ class RobotDNA(UserDict):
             self.get_byte("blue"),
             255
         )
+
     def randomize(self):
         for key in self.binary:
             self.binary[key] = (random.random() >= 0.5)
         for key in self.real:
             self.real[key] = random.random()
 
-    def get_mapped_real(self,key, start, stop):
+    def get_mapped_real(self, key, start, stop):
         return ((stop-start)*self.real[key] + start)
 
 # TODO: Separate out a cluster object class for multiple rect objects like this
