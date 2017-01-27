@@ -57,11 +57,23 @@ class GraphicsObject:
     def chain_print(self):
         return "GraphicsObject"
 
+def limit(number, lower, upper):
+    assert lower < upper or (lower is None or upper is None)
+    if lower and number < lower:
+        number = lower
+    if upper and number > upper:
+        number = upper
+    # TODO: remove these asserts and make tests
+    assert number <= upper or not upper
+    assert number >= lower or not lower
+    return number
+
 class PhysicsObject(GraphicsObject):
-    def __init__(self, pos=(0,0), vel=(0,0), acc=(0,0)):
+    def __init__(self, pos=(0,0), vel=(0,0), acc=(0,0), limits=None):
         GraphicsObject.set_pos(self, pos[0],pos[1])
         PhysicsObject.set_vel(self, vel[0],vel[1])
         PhysicsObject.set_acc(self, acc[0],acc[1])
+        self.limits = limits
 
     def set_vel(self, dx, dy):
         self.dx = float(dx)
@@ -71,9 +83,17 @@ class PhysicsObject(GraphicsObject):
         self.ddx = float(ddx)
         self.ddy = float(ddy)
 
+    def apply_limits(self):
+        if not self.limits:
+            return
+        for var, lim in self.limits.items():
+            self.__dict__[var] = limit(self.__dict__[var], *lim)
+
+
     # Note: if you don't need acceleration and velocity
     #       simply call set_pos instead
     def update(self, dt):
+        self.apply_limits()
         s = self
         dt = float(dt)
         # Do all calculations first (right side) then assign (left side):
@@ -84,6 +104,7 @@ class PhysicsObject(GraphicsObject):
         # Sub classes can override these methods, like robot does:
         self.set_vel(dx,dy)
         self.set_pos(x,y)
+        self.apply_limits()
 
     def chain_print(self):
         return "PhysicsObject->" + super().chain_print()
