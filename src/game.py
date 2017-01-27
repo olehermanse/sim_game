@@ -15,7 +15,7 @@ class Game:
     def __init__(self, window):
         self.window = window
         self.robots = []
-        for _ in range(4):
+        for _ in range(2):
             x = random.randint(50,750)
             y = random.randint(50,550)
             self.make_robot(x,y)

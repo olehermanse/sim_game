@@ -9,6 +9,10 @@ __license__  = "MIT"
 from graphics import PhysicsRectangle, Rectangle
 from collections import UserDict
 import random
+import math
+
+def distance(x1,y1,x2,y2):
+    return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
 class RobotDNA(UserDict):
     def __init__(self, randomize=True, **kwargs):
@@ -99,12 +103,15 @@ class Robot(PhysicsRectangle):
         super().__init__(width, height, *args, **kwargs)
         self.body = Rectangle(width/3, height/3, *args, **kwargs)
         self.head = Rectangle(width*0.8, height*0.8, *args, **kwargs)
-        self.head.move_pos(0,height/2)
         self.head.fill = self.dna.get_color()
         self.eye = Rectangle(width*0.6, height*0.2, *args, **kwargs)
         self.eye.set_fill((0,255,0,255))
-        self.eye.move_pos(0,height/2+height/6)
         self.body_parts = [self.body, self.head, self.eye]
+        self.targetx = random.uniform(0,800)
+        self.targety = random.uniform(0,600)
+        self.limits = None#{"dx":(-200,200), "dy":(-200,200)}
+        self.sleep_counter = 0.0
+        self.sleeping = False
 
     def set_pos(self, x,y):
         dx = x - self.x
@@ -123,18 +130,52 @@ class Robot(PhysicsRectangle):
 
     def move_pos(self, dx, dy):
         super().move_pos(dx,dy)
-        for part in self.body_parts:
-            part.move_pos(dx,dy)
+
+        self.body.set_pos(self.x, self.y)
+        self.head.set_pos(self.x,self.y+self.h/2)
+        self.eye.set_pos(self.x,self.y+self.h/2+self.h/6)
 
     def draw(self):
         for part in self.body_parts:
             part.draw()
 
-    def update(self, dt):
-        self.ddx += random.uniform(-0.5, 0.5)
-        self.ddy += random.uniform(-0.5, 0.5)
+    def sleep(self, t):
+        self.sleeping = True
+        self.sleep_counter = t
+        self.eye.set_fill((0,0,255,255))
+
+    def sleep_tick(self, dt):
+        self.sleep_counter -= dt
+        if self.sleep_counter > 0:
+            self.sleeping = True
+            return
+        self.sleeping = False
+
+    def sleep_update(self, dt):
+        self.sleep_tick(dt)
+        self.set_vel(0,0)
+        self.set_acc(0,0)
+        if not self.sleeping:
+            self.eye.set_fill((0,255,0,255))
         super().update(dt)
 
-        # for part in self.body_parts:
-        #     part.set_acc(self.ddx, self.ddy)
-        #     part.update(dt)
+    def update(self, dt):
+        if self.sleeping:
+            self.sleep_update(dt)
+            return
+
+        dx, dy = self.targetx - self.x,\
+                 self.targety - self.y
+        d = math.sqrt(dx**2 + dy**2)
+
+        vel = 5 + 4*d + 0.02*d**2
+        if vel>100:
+            vel = 200
+        self.dx, self.dy = vel * dx/d,\
+                           vel * dy/d
+        super().update(dt)
+
+        while distance(self.targetx, self.targety, self.x, self.y) < 2:
+            self.targetx = random.uniform(50,750)
+            self.targety = random.uniform(50,550)
+            self.sleep(random.uniform(1.0, 7.0))
