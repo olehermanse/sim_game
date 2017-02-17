@@ -33,6 +33,28 @@ class RobotDNA(UserDict):
         self.master = {"binary": self.binary, "real": self.real}
         super().__init__(self.master)
 
+    def combine(self, dna, probability_average=0.3, weighted_average=True):
+        parents = [self, dna]
+        child = RobotDNA(randomize=False)
+        for key in dna.binary:
+            r = random.randint(0,1)
+            child.binary[key] = parents[r].binary[key]
+
+        for key in dna.real:
+            p = random.uniform(0.0,1.0)
+            if p < probability_average:
+                w1 = 0.5
+                if weighted_average:
+                    w1 = random.uniform(0.0,1.0)
+                w2 = 1.0 - w1
+                a,b = parents[0].real[key], parents[1].real[key]
+                child.real[key] = a * w1 + b * w2
+            else:
+                r = random.randint(0,1)
+                child.real[key] = parents[r].real[key]
+        return child
+
+
     def set(self, **kwargs):
         for key, value in kwargs.items():
             if type(value) is bool:
@@ -95,8 +117,11 @@ class RobotDNA(UserDict):
 
 # TODO: Separate out a cluster object class for multiple rect objects like this
 class Robot(PhysicsRectangle):
-    def __init__(self, *args, stroke=(0,0,0,255), fill=(128,128,128,255), **kwargs):
-        self.dna = RobotDNA()
+    def __init__(self, *args, stroke=(0,0,0,255), fill=(128,128,128,255),dna=None, **kwargs):
+        if not dna:
+            self.dna = RobotDNA()
+        else:
+            self.dna = dna
         ratio = (1/2**(self.dna.get_mapped_real("ratio",-1,1)))
         width = self.dna.get_mapped_real("size",50,100)
         height = width*ratio

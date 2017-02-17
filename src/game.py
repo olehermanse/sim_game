@@ -22,8 +22,13 @@ class Game:
             self.make_robot(x,y)
 
     def make_robot(self, x, y):
+        if len(self.robots) > 10:
+            return
+        dna = None
+        if len(self.robots) > 1:
+            dna = self.robots[0].dna.combine(self.robots[1].dna)
         r = Robot(pos=(x,y), stroke=(0,0,0,255), fill=(128,128,128,255),
-                           centered=True)
+                           centered=True, dna=dna)
         self.robots.append(r)
 
     # TODO: change to batch drawing for performance
