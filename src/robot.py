@@ -6,9 +6,13 @@ __author__   = ["Ole Herman Schumacher Elgesem", "Tor Jan Derek Berstad"]
 __license__  = "MIT"
 # This file is subject to the terms and conditions defined in 'LICENSE'
 
-from graphics import Rectangle
+from graphics import PhysicsRectangle, Rectangle
 from collections import UserDict
 import random
+import math
+
+def distance(x1,y1,x2,y2):
+    return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
 class RobotDNA(UserDict):
     def __init__(self, randomize=True, **kwargs):
@@ -28,6 +32,28 @@ class RobotDNA(UserDict):
 
         self.master = {"binary": self.binary, "real": self.real}
         super().__init__(self.master)
+
+    def combine(self, dna, probability_average=0.3, weighted_average=True):
+        parents = [self, dna]
+        child = RobotDNA(randomize=False)
+        for key in dna.binary:
+            r = random.randint(0,1)
+            child.binary[key] = parents[r].binary[key]
+
+        for key in dna.real:
+            p = random.uniform(0.0,1.0)
+            if p < probability_average:
+                w1 = 0.5
+                if weighted_average:
+                    w1 = random.uniform(0.0,1.0)
+                w2 = 1.0 - w1
+                a,b = parents[0].real[key], parents[1].real[key]
+                child.real[key] = a * w1 + b * w2
+            else:
+                r = random.randint(0,1)
+                child.real[key] = parents[r].real[key]
+        return child
+
 
     def set(self, **kwargs):
         for key, value in kwargs.items():
@@ -90,21 +116,27 @@ class RobotDNA(UserDict):
         return ((stop-start)*self.real[key] + start)
 
 # TODO: Separate out a cluster object class for multiple rect objects like this
-class Robot(Rectangle):
-    def __init__(self, *args, stroke=(0,0,0,255), fill=(128,128,128,255), **kwargs):
-        self.dna = RobotDNA()
+class Robot(PhysicsRectangle):
+    def __init__(self, *args, stroke=(0,0,0,255), fill=(128,128,128,255),dna=None, **kwargs):
+        if not dna:
+            self.dna = RobotDNA()
+        else:
+            self.dna = dna
         ratio = (1/2**(self.dna.get_mapped_real("ratio",-1,1)))
         width = self.dna.get_mapped_real("size",50,100)
         height = width*ratio
         super().__init__(width, height, *args, **kwargs)
         self.body = Rectangle(width/3, height/3, *args, **kwargs)
         self.head = Rectangle(width*0.8, height*0.8, *args, **kwargs)
-        self.head.move_pos(0,height/2)
         self.head.fill = self.dna.get_color()
         self.eye = Rectangle(width*0.6, height*0.2, *args, **kwargs)
         self.eye.set_fill((0,255,0,255))
-        self.eye.move_pos(0,height/2+height/6)
         self.body_parts = [self.body, self.head, self.eye]
+        self.targetx = random.uniform(0,800)
+        self.targety = random.uniform(0,600)
+        self.limits = None#{"dx":(-200,200), "dy":(-200,200)}
+        self.sleep_counter = 0.0
+        self.sleeping = False
 
     def set_pos(self, x,y):
         dx = x - self.x
@@ -113,24 +145,62 @@ class Robot(Rectangle):
 
     def set_vel(self, dx, dy):
         super().set_vel(dx,dy)
-        for part in self.body_parts:
-            part.set_vel(dx,dy)
+        # for part in self.body_parts:
+        #     part.set_vel(dx,dy)
 
     def set_acc(self, ddx, ddy):
         super().set_acc(ddx,ddy)
-        for part in self.body_parts:
-            part.set_acc(ddx,ddy)
+        # for part in self.body_parts:
+        #     part.set_acc(ddx,ddy)
 
     def move_pos(self, dx, dy):
         super().move_pos(dx,dy)
-        for part in self.body_parts:
-            part.move_pos(dx,dy)
+
+        self.body.set_pos(self.x, self.y)
+        self.head.set_pos(self.x,self.y+self.h/2)
+        self.eye.set_pos(self.x,self.y+self.h/2+self.h/6)
 
     def draw(self):
         for part in self.body_parts:
             part.draw()
 
-    def update(self, dt):
+    def sleep(self, t):
+        self.sleeping = True
+        self.sleep_counter = t
+        self.eye.set_fill((0,0,255,255))
+
+    def sleep_tick(self, dt):
+        self.sleep_counter -= dt
+        if self.sleep_counter > 0:
+            self.sleeping = True
+            return
+        self.sleeping = False
+
+    def sleep_update(self, dt):
+        self.sleep_tick(dt)
+        self.set_vel(0,0)
+        self.set_acc(0,0)
+        if not self.sleeping:
+            self.eye.set_fill((0,255,0,255))
         super().update(dt)
-        for part in self.body_parts:
-            part.update(dt)
+
+    def update(self, dt):
+        if self.sleeping:
+            self.sleep_update(dt)
+            return
+
+        dx, dy = self.targetx - self.x,\
+                 self.targety - self.y
+        d = math.sqrt(dx**2 + dy**2)
+
+        vel = 5 + 4*d + 0.02*d**2
+        if vel>100:
+            vel = 200
+        self.dx, self.dy = vel * dx/d,\
+                           vel * dy/d
+        super().update(dt)
+
+        while distance(self.targetx, self.targety, self.x, self.y) < 2:
+            self.targetx = random.uniform(50,750)
+            self.targety = random.uniform(50,550)
+            self.sleep(random.uniform(1.0, 7.0))
