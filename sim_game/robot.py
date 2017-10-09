@@ -5,6 +5,12 @@
 __author__   = ["Ole Herman Schumacher Elgesem", "Tor Jan Derek Berstad"]
 __license__  = "MIT"
 # This file is subject to the terms and conditions defined in 'LICENSE'
+try:
+    from pyglet.media import Player
+    from pyglet.media.procedural import Silence, Sine, Saw
+except:
+    print("Warning: could not import pyglet.")
+    print("This is acceptable for tests, but rendering will not work.")
 
 from graphics import PhysicsRectangle, Rectangle
 from collections import UserDict
@@ -117,11 +123,12 @@ class RobotDNA(UserDict):
 
 # TODO: Separate out a cluster object class for multiple rect objects like this
 class Robot(PhysicsRectangle):
-    def __init__(self, *args, stroke=(0,0,0,255), fill=(128,128,128,255),dna=None, **kwargs):
+    def __init__(self, world, *args, stroke=(0,0,0,255), fill=(128,128,128,255),dna=None, **kwargs):
         if not dna:
             self.dna = RobotDNA()
         else:
             self.dna = dna
+        self.world = world
         ratio = (1/2**(self.dna.get_mapped_real("ratio",-1,1)))
         width = self.dna.get_mapped_real("size",50,100)
         height = width*ratio
@@ -132,11 +139,22 @@ class Robot(PhysicsRectangle):
         self.eye = Rectangle(width*0.6, height*0.2, *args, **kwargs)
         self.eye.set_fill((0,255,0,255))
         self.body_parts = [self.body, self.head, self.eye]
-        self.targetx = random.uniform(0,800)
-        self.targety = random.uniform(0,600)
-        self.limits = None#{"dx":(-200,200), "dy":(-200,200)}
+        self.targetx = random.uniform(0, self.world.w)
+        self.targety = random.uniform(0, self.world.h)
+        self.limits = None
         self.sleep_counter = 0.0
         self.sleeping = False
+
+        p = Player()
+        n = [261.6, 293.7, 329.7, 349.2, 392, 440, 493, 523.3, 587.4]
+        l = len(n)
+        for _ in range(5):
+            # TODO: add envelope fading
+            #       pyglet 1.3.0 will add support for envelopes
+            s = Sine(0.1, n[random.randint(0,l-1)])
+            p.volume = 0.25
+            p.queue(s)
+        p.play()
 
     def set_pos(self, x,y):
         dx = x - self.x

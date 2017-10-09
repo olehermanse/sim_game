@@ -18,10 +18,16 @@ import sound_lib
 import time
 
 class Wave:
+
+    def add_notes(self, notes):
+        self.notes = notes
+        
     #Play a notes array using pyaudio
     #Format: (track,channel,instrument,pitch,time,duration,volume)
     #TODO Test this
-    def play_notes(self, notes):
+    def play_notes(self, notes=None):
+        if not notes:
+            notes = self.notes
         player = pyaudio.PyAudio()
         lib = sound_lib.SoundLib()
         fs = 44100  # sampling rate, Hz, must be integer
@@ -54,8 +60,8 @@ class Wave:
     #Play notes in a new thread instead of in the main thread.
     def play_notes_thread(self, notes):
         try:
-            t = threading.Thread(target=self.play_notes,args=(notes,))
-            t.daemon = True
+            self.add_notes(notes)
+            t = threading.Thread(target=self.play_notes)
             t.start()
         except Exception as inst:
             print(type(inst))     # the exception instance

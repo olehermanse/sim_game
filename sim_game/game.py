@@ -9,16 +9,20 @@ __license__    = "MIT"
 from graphics import SpriteObject, TextObject, Rectangle, Renderer
 from robot import Robot
 
-
 import random
 
+class World:
+    def __init__(self, w, h):
+        self.w, self.h = w, h
+
 class Game:
-    def __init__(self, window):
+    def __init__(self, window, w, h):
         self.window = window
+        self.world = World(w,h)
         self.robots = []
         for _ in range(2):
-            x = random.randint(50,750)
-            y = random.randint(50,550)
+            x = random.randint(50, w-50)
+            y = random.randint(50, h-50)
             self.make_robot(x,y)
 
     def make_robot(self, x, y):
@@ -27,8 +31,8 @@ class Game:
         dna = None
         if len(self.robots) > 1:
             dna = self.robots[0].dna.combine(self.robots[1].dna)
-        r = Robot(pos=(x,y), stroke=(0,0,0,255), fill=(128,128,128,255),
-                           centered=True, dna=dna)
+        r = Robot(self.world, pos=(x,y), centered=True, dna=dna,
+                  stroke=(0,0,0,255), fill=(128,128,128,255))
         self.robots.append(r)
 
     # TODO: change to batch drawing for performance
