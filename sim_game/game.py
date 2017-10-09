@@ -6,9 +6,9 @@ __authors__    = ["Ole Herman Schumacher Elgesem"]
 __license__    = "MIT"
 # This file is subject to the terms and conditions defined in 'LICENSE'
 
-from graphics import GraphicsRectangle, Renderer
-from physics import SpriteObject, TextObject
-from robot import Robot
+from sim_game.graphics import GraphicsRectangle, Renderer
+from sim_game.physics import SpriteObject, TextObject
+from sim_game.robot import Robot
 
 import random
 

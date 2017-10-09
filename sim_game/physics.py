@@ -14,8 +14,8 @@ except:
     print("Warning: could not import pyglet.")
     print("This is acceptable for tests, but rendering will not work.")
 
-from geometry import limit, Rectangle, Point
-from graphics import Color, Renderer, GraphicsObject, GraphicsRectangle
+from sim_game.geometry import limit, Rectangle, Point
+from sim_game.graphics import Color, Renderer, GraphicsObject, GraphicsRectangle
 
 class PhysicsObject(GraphicsObject):
     def __init__(self, pos=(0,0), vel=(0,0), acc=(0,0), limits=None):

@@ -3,6 +3,8 @@
 '''Hacky way to make sure imports work'''
 import sys
 import os
-sys.path.insert(0, "./")
+
 if os.path.exists("./sim_game/__init__.py"):
-    sys.path.insert(0, "./sim_game")
+    sys.path.insert(0, "./")
+if os.path.exists("../sim_game/__init__.py"):
+    sys.path.insert(0, "../")

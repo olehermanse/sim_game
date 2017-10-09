@@ -12,9 +12,9 @@ except:
     print("Warning: could not import pyglet.")
     print("This is acceptable for tests, but rendering will not work.")
 
-from graphics import GraphicsRectangle
-from physics import PhysicsRectangle
-from dna import DNA
+from sim_game.graphics import GraphicsRectangle
+from sim_game.physics import PhysicsRectangle
+from sim_game.dna import DNA
 from collections import UserDict
 import random
 import math

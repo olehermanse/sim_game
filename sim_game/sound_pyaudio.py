@@ -14,14 +14,14 @@ except:
     print("Could not import pyaudio or Numpy")
 
 import threading
-import sound_lib
+import sim_game.sound_lib
 import time
 
 class Wave:
 
     def add_notes(self, notes):
         self.notes = notes
-        
+
     #Play a notes array using pyaudio
     #Format: (track,channel,instrument,pitch,time,duration,volume)
     #TODO Test this

@@ -5,6 +5,12 @@
 __authors__    = ["Ole Herman Schumacher Elgesem"]
 __license__    = "MIT"
 # This file is subject to the terms and conditions defined in 'LICENSE'
+import os
+import sys
+if os.path.exists("./sim_game/__init__.py"):
+    sys.path.insert(0, "./")
+if os.path.exists("../sim_game/__init__.py"):
+    sys.path.insert(0, "../")
 
 from game import Game
 

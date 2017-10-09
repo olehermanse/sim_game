@@ -1,7 +1,17 @@
-# from sound_midi import Midi
-# from sound_pygame import Pygame_player
-from sound_pyaudio import Wave
-# from sound_lib import SoundLib
+# Fixing the path is normally done by the __main__ module:
+import os
+import sys
+if os.path.exists("./sim_game/__init__.py"):
+    sys.path.insert(0, "./")
+if os.path.exists("../sim_game/__init__.py"):
+    sys.path.insert(0, "../")
+
+
+# from sim_game.sound_midi import Midi
+# from sim_game.sound_pygame import Pygame_player
+
+from sim_game.sound_pyaudio import Wave
+# from sim_game.sound_lib import SoundLib
 # import os
 # import time
 

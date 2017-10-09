@@ -14,7 +14,7 @@ except:
     print("Warning: could not import pyglet.")
     print("This is acceptable for tests, but rendering will not work.")
 
-from geometry import limit, Rectangle, Point
+from sim_game.geometry import limit, Rectangle, Point
 
 class Color:
     colors = {

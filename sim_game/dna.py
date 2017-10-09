@@ -8,7 +8,6 @@ __license__  = "MIT"
 
 from collections import UserDict
 import random
-#import math
 
 class DNA(UserDict):
     def __init__(self, randomize=True, **kwargs):

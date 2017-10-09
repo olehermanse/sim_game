@@ -3,6 +3,7 @@
 import path_fix
 
 from sim_game import robot
+from sim_game.dna import DNA
 
 # Do we get the expected error given the function call with arguments
 def expect(error, function, *args, **kwargs):
@@ -39,8 +40,8 @@ def test_dna_methods():
         dna_methods()
 
 def test_key_error():
-    expect(KeyError, robot.RobotDNA, none_key=True)
-    expect(KeyError, robot.RobotDNA, none_key=0.5)
+    expect(KeyError, DNA, none_key=True)
+    expect(KeyError, DNA, none_key=0.5)
     dna = robot.DNA()
     expect(KeyError, dna.get_byte, "fake_key")
     expect(KeyError, dna.set_byte, "superawesomegene", 1)

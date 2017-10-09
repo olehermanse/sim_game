@@ -12,9 +12,9 @@ test: dir_test
 	py.test
 
 run:
-	python3 sim_game/main.py
+	python3 sim_game
 
 run-exe:
-	python3.exe sim_game/main.py
+	python3.exe sim_game
 
 .PHONY: dir_test test run
