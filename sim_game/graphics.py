@@ -14,6 +14,8 @@ except:
     print("Warning: could not import pyglet.")
     print("This is acceptable for tests, but rendering will not work.")
 
+from geometry import limit, Rectangle, Point
+
 class Color:
     colors = {
         "red":   (255,0,0,255),
@@ -57,17 +59,6 @@ class GraphicsObject:
 
     def chain_print(self):
         return "GraphicsObject"
-
-def limit(number, lower, upper):
-    assert lower < upper or (lower is None or upper is None)
-    if lower and number < lower:
-        number = lower
-    if upper and number > upper:
-        number = upper
-    # TODO: remove these asserts and make tests
-    assert number <= upper or not upper
-    assert number >= lower or not lower
-    return number
 
 class PhysicsObject(GraphicsObject):
     def __init__(self, pos=(0,0), vel=(0,0), acc=(0,0), limits=None):
