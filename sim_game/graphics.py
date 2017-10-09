@@ -57,9 +57,6 @@ class GraphicsObject:
     def update(self, dt):
         raise NotImplementedError
 
-    def chain_print(self):
-        return "GraphicsObject"
-
 class PhysicsObject(GraphicsObject):
     def __init__(self, pos=(0,0), vel=(0,0), acc=(0,0), limits=None):
         GraphicsObject.set_pos(self, pos[0],pos[1])
@@ -97,9 +94,6 @@ class PhysicsObject(GraphicsObject):
         self.set_vel(dx,dy)
         self.set_pos(x,y)
         self.apply_limits()
-
-    def chain_print(self):
-        return "PhysicsObject->" + super().chain_print()
 
 # TODO: Make this inherit from Rectangle
 class SpriteObject(PhysicsObject):
@@ -166,9 +160,6 @@ class GraphicsRectangle(GraphicsObject):
         rect_vertices.colors = self.stroke * 4
         rect_vertices.draw(pyglet.gl.GL_LINE_LOOP)
 
-    def chain_print(self):
-        return "Rectangle->" + super().chain_print()
-
 class PhysicsRectangle(GraphicsRectangle, PhysicsObject):
     def __init__(self, width, height, **kwargs):
         """
@@ -179,6 +170,3 @@ class PhysicsRectangle(GraphicsRectangle, PhysicsObject):
 
     def update(self, dt):
         super().update(dt)
-
-    def chain_print(self):
-        return "PhysicsRectangle->" + super().chain_print()
