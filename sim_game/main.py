@@ -13,18 +13,24 @@ try:
     from pyglet.graphics import glScalef
     from pyglet.window import mouse
 except:
-    print("Warning: could not import pyglet")
+    print("Warning: could not import pyglet.")
+    print("This is acceptable for tests, but rendering will not work.")
+
+game = None
 
 def update(dt):
     game.update(dt)
 
-if __name__ == '__main__':
+def main():
     w, h = 1280, 720
     window = pyglet.window.Window(w, h, resizable=True)
     cursor = window.get_system_mouse_cursor("crosshair")
     window.set_mouse_cursor(cursor)
+    global game
     game = Game(window, w, h)
     pyglet.clock.schedule_interval(update, 0.01)
+
+    # Event callbacks need to be registered here because of the window object:
 
     @window.event
     def on_draw():
@@ -65,3 +71,7 @@ if __name__ == '__main__':
 
 
     pyglet.app.run()
+
+if __name__ == '__main__':
+    # Add command line parsing here, if applicable
+    main()
