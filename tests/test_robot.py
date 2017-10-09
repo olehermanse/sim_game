@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import path_fix
 
-from src import robot
+from sim_game import robot
 
 # Do we get the expected error given the function call with arguments
 def expect(error, function, *args, **kwargs):
