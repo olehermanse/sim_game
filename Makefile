@@ -14,4 +14,7 @@ test: dir_test
 run:
 	python3 src/main.py
 
+run-exe:
+	python3.exe src/main.py
+
 .PHONY: dir_test test run
