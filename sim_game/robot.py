@@ -12,7 +12,7 @@ except:
     print("Warning: could not import pyglet.")
     print("This is acceptable for tests, but rendering will not work.")
 
-from graphics import PhysicsRectangle, Rectangle
+from graphics import PhysicsRectangle, GraphicsRectangle
 from collections import UserDict
 import random
 import math
@@ -133,10 +133,10 @@ class Robot(PhysicsRectangle):
         width = self.dna.get_mapped_real("size",50,100)
         height = width*ratio
         super().__init__(width, height, *args, **kwargs)
-        self.body = Rectangle(width/3, height/3, *args, **kwargs)
-        self.head = Rectangle(width*0.8, height*0.8, *args, **kwargs)
+        self.body = GraphicsRectangle(width/3, height/3, *args, **kwargs)
+        self.head = GraphicsRectangle(width*0.8, height*0.8, *args, **kwargs)
         self.head.fill = self.dna.get_color()
-        self.eye = Rectangle(width*0.6, height*0.2, *args, **kwargs)
+        self.eye = GraphicsRectangle(width*0.6, height*0.2, *args, **kwargs)
         self.eye.set_fill((0,255,0,255))
         self.body_parts = [self.body, self.head, self.eye]
         self.targetx = random.uniform(0, self.world.w)

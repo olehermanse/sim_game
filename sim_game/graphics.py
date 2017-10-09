@@ -140,14 +140,14 @@ class TextObject(PhysicsObject):
         self.label.y = self.y
 
 #TODO: make colored rect separate class
-class Rectangle(GraphicsObject):
+class GraphicsRectangle(GraphicsObject):
     def __init__(self, width, height, fill=(128,128,128,255), stroke=(0,0,0,0), pos=(0,0), vel=(0,0), acc=(0,0), centered=False):
         self.centered = centered
         self.w = width
         self.h = height
         super().__init__(pos=pos)
         if centered:
-            Rectangle.set_pos(self, pos[0], pos[1])
+            GraphicsRectangle.set_pos(self, pos[0], pos[1])
         self.stroke = stroke
         self.fill = fill
 
@@ -178,13 +178,13 @@ class Rectangle(GraphicsObject):
     def chain_print(self):
         return "Rectangle->" + super().chain_print()
 
-class PhysicsRectangle(Rectangle, PhysicsObject):
+class PhysicsRectangle(GraphicsRectangle, PhysicsObject):
     def __init__(self, width, height, **kwargs):
         """
         super init chain like this:
         PhysicsRectangle->Rectangle->PhysicsObject->GraphicsObject
         """
-        Rectangle.__init__(self, width, height, **kwargs)
+        GraphicsRectangle.__init__(self, width, height, **kwargs)
 
     def update(self, dt):
         super().update(dt)

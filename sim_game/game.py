@@ -6,7 +6,7 @@ __authors__    = ["Ole Herman Schumacher Elgesem"]
 __license__    = "MIT"
 # This file is subject to the terms and conditions defined in 'LICENSE'
 
-from graphics import SpriteObject, TextObject, Rectangle, Renderer
+from graphics import SpriteObject, TextObject, GraphicsRectangle, Renderer
 from robot import Robot
 
 import random
