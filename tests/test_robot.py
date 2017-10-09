@@ -16,7 +16,7 @@ def expect(error, function, *args, **kwargs):
 # Can also be used as examples (documentation)
 # Warning: test uses random (but *should* always pass)
 def dna_methods():
-    dna = robot.RobotDNA(randomize=True, size=0.7)
+    dna = robot.DNA(randomize=True, size=0.7)
     assert dna.get("size") > 0.6
 
     dna.randomize()
@@ -41,13 +41,13 @@ def test_dna_methods():
 def test_key_error():
     expect(KeyError, robot.RobotDNA, none_key=True)
     expect(KeyError, robot.RobotDNA, none_key=0.5)
-    dna = robot.RobotDNA()
+    dna = robot.DNA()
     expect(KeyError, dna.get_byte, "fake_key")
     expect(KeyError, dna.set_byte, "superawesomegene", 1)
     expect(KeyError, dna.get, "fake_key")
 
 def test_dna_bytes():
-    dna = robot.RobotDNA()
+    dna = robot.DNA()
     real_genes = dna["real"]
     # Don't add new genes to this list:
     expected_real_genes = ["red", "size", "ratio"]
