@@ -5,18 +5,18 @@
 __authors__    = ["Ole Herman Schumacher Elgesem"]
 __license__    = "MIT"
 # This file is subject to the terms and conditions defined in 'LICENSE'
-import os
+
+from os.path import abspath, dirname, realpath, join
 import sys
-if os.path.exists("./sim_game/__init__.py"):
-    sys.path.insert(0, "./")
-if os.path.exists("../sim_game/__init__.py"):
-    sys.path.insert(0, "../")
+
+# This allows imports to work, even if sim_game is not in python path:
+package_location = abspath(join(dirname(realpath(__file__)) , ".."))
+sys.path.insert(0, package_location)
 
 from game import Game
 
 try:
     import pyglet
-    from pyglet.graphics import glScalef
     from pyglet.window import mouse
 except:
     print("Warning: could not import pyglet.")
