@@ -12,7 +12,8 @@ except:
     print("Warning: could not import pyglet.")
     print("This is acceptable for tests, but rendering will not work.")
 
-from graphics import PhysicsRectangle, GraphicsRectangle
+from graphics import GraphicsRectangle
+from physics import PhysicsRectangle
 from collections import UserDict
 import random
 import math
