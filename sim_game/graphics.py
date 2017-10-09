@@ -11,7 +11,8 @@ try:
     from pyglet.text import Label
     from pyglet.resource import image
 except:
-    print("Warning: could not import pyglet")
+    print("Warning: could not import pyglet.")
+    print("This is acceptable for tests, but rendering will not work.")
 
 class Color:
     colors = {

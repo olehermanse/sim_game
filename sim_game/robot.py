@@ -5,9 +5,12 @@
 __author__   = ["Ole Herman Schumacher Elgesem", "Tor Jan Derek Berstad"]
 __license__  = "MIT"
 # This file is subject to the terms and conditions defined in 'LICENSE'
-
-from pyglet.media import Player
-from pyglet.media.procedural import Silence, Sine, Saw
+try:
+    from pyglet.media import Player
+    from pyglet.media.procedural import Silence, Sine, Saw
+except:
+    print("Warning: could not import pyglet.")
+    print("This is acceptable for tests, but rendering will not work.")
 
 from graphics import PhysicsRectangle, Rectangle
 from collections import UserDict
