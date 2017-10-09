@@ -6,6 +6,9 @@ __author__   = ["Ole Herman Schumacher Elgesem", "Tor Jan Derek Berstad"]
 __license__  = "MIT"
 # This file is subject to the terms and conditions defined in 'LICENSE'
 
+from pyglet.media import Player
+from pyglet.media.procedural import Silence, Sine, Saw
+
 from graphics import PhysicsRectangle, Rectangle
 from collections import UserDict
 import random
@@ -138,6 +141,17 @@ class Robot(PhysicsRectangle):
         self.limits = None
         self.sleep_counter = 0.0
         self.sleeping = False
+
+        p = Player()
+        n = [261.6, 293.7, 329.7, 349.2, 392, 440, 493, 523.3, 587.4]
+        l = len(n)
+        for _ in range(5):
+            # TODO: add envelope fading
+            #       pyglet 1.3.0 will add support for envelopes
+            s = Sine(0.1, n[random.randint(0,l-1)])
+            p.volume = 0.25
+            p.queue(s)
+        p.play()
 
     def set_pos(self, x,y):
         dx = x - self.x
