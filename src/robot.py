@@ -117,11 +117,12 @@ class RobotDNA(UserDict):
 
 # TODO: Separate out a cluster object class for multiple rect objects like this
 class Robot(PhysicsRectangle):
-    def __init__(self, *args, stroke=(0,0,0,255), fill=(128,128,128,255),dna=None, **kwargs):
+    def __init__(self, world, *args, stroke=(0,0,0,255), fill=(128,128,128,255),dna=None, **kwargs):
         if not dna:
             self.dna = RobotDNA()
         else:
             self.dna = dna
+        self.world = world
         ratio = (1/2**(self.dna.get_mapped_real("ratio",-1,1)))
         width = self.dna.get_mapped_real("size",50,100)
         height = width*ratio
@@ -132,9 +133,9 @@ class Robot(PhysicsRectangle):
         self.eye = Rectangle(width*0.6, height*0.2, *args, **kwargs)
         self.eye.set_fill((0,255,0,255))
         self.body_parts = [self.body, self.head, self.eye]
-        self.targetx = random.uniform(0,800)
-        self.targety = random.uniform(0,600)
-        self.limits = None#{"dx":(-200,200), "dy":(-200,200)}
+        self.targetx = random.uniform(0, self.world.w)
+        self.targety = random.uniform(0, self.world.h)
+        self.limits = None
         self.sleep_counter = 0.0
         self.sleeping = False
 

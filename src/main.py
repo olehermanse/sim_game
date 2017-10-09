@@ -19,10 +19,11 @@ def update(dt):
     game.update(dt)
 
 if __name__ == '__main__':
-    window = pyglet.window.Window(800,600, resizable=True)
+    w, h = 1280, 720
+    window = pyglet.window.Window(w, h, resizable=True)
     cursor = window.get_system_mouse_cursor("crosshair")
     window.set_mouse_cursor(cursor)
-    game = Game(window)
+    game = Game(window, w, h)
     pyglet.clock.schedule_interval(update, 0.01)
 
     @window.event
