@@ -7,11 +7,11 @@ if os.path.exists("../sim_game/__init__.py"):
     sys.path.insert(0, "../")
 
 
-# from sim_game.sound_midi import Midi
-# from sim_game.sound_pygame import Pygame_player
+# from sim_game.sound.midi import Midi
+# from sim_game.sound.pygame import Pygame_player
 
-from sim_game.sound_pyaudio import Wave
-# from sim_game.sound_lib import SoundLib
+from sim_game.sound.pyaudio import Wave
+# from sim_game.sound.lib import SoundLib
 # import os
 # import time
 

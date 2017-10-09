@@ -14,7 +14,7 @@ except:
     print("Could not import pyaudio or Numpy")
 
 import threading
-import sim_game.sound_lib
+import sim_game.sound.lib as sound_lib
 import time
 
 class Wave:
