@@ -24,7 +24,7 @@ def distance(x1,y1,x2,y2):
 
 # TODO: Separate out a cluster object class for multiple rect objects like this
 class Robot(PhysicsRectangle):
-    def __init__(self, world, *args, stroke=(0,0,0,255), fill=(128,128,128,255),dna=None, **kwargs):
+    def __init__(self, world, *args, dna=None, **kwargs):
         if not dna:
             self.dna = DNA()
         else:
@@ -36,7 +36,7 @@ class Robot(PhysicsRectangle):
         super().__init__(width, height, *args, **kwargs)
         self.body = GraphicsRectangle(width/3, height/3, *args, **kwargs)
         self.head = GraphicsRectangle(width*0.8, height*0.8, *args, **kwargs)
-        self.head.fill = self.dna.get_color()
+        self.head.set_fill(self.dna.rgba())
         self.eye = GraphicsRectangle(width*0.6, height*0.2, *args, **kwargs)
         self.eye.set_fill((0,255,0,255))
         self.body_parts = [self.body, self.head, self.eye]

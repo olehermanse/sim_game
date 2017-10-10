@@ -17,6 +17,20 @@ except:
 from sim_game.geometry import limit, Rectangle, Point
 
 class Color:
+    def __init__(self, r,g,b,a=255):
+        self.r = r
+        self.g = g
+        self.b = b
+        self.a = a
+
+    def rgba(self):
+        return (self.r, self.g, self.b, self.a)
+
+    def __getitem__(self, key):
+        if type(key) is not int:
+            raise TypeError
+        return self.rgba()[key]
+
     colors = {
         "red":   (255,0,0,255),
         "green": (0,255,0,255),
@@ -24,9 +38,10 @@ class Color:
         "white": (255,255,255,255),
         "black": (0,0,0,255)
     }
+
     @classmethod
     def get(cls, name):
-        return cls.colors[name]
+        return Color(cls.colors[name])
 
 class Renderer:
     @staticmethod
@@ -60,14 +75,14 @@ class GraphicsObject:
 #TODO: make colored rect separate class
 class GraphicsRectangle(GraphicsObject):
     def __init__(self, width, height, fill=(128,128,128,255), stroke=(0,0,0,0), pos=(0,0), vel=(0,0), acc=(0,0), centered=False):
+        self.stroke = Color(*stroke)
+        self.fill = Color(*fill)
         self.centered = centered
         self.w = width
         self.h = height
         super().__init__(pos=pos)
         if centered:
             GraphicsRectangle.set_pos(self, pos[0], pos[1])
-        self.stroke = stroke
-        self.fill = fill
 
     def set_pos(self, x,y):
         super().set_pos(x,y)
@@ -76,7 +91,7 @@ class GraphicsRectangle(GraphicsObject):
             self.y -= self.h/2
 
     def set_fill(self, fill):
-        self.fill = fill
+        self.fill = Color(*fill)
 
     def draw(self):
         pyglet.gl.glLineWidth(4)
@@ -86,6 +101,32 @@ class GraphicsRectangle(GraphicsObject):
                     (self.x+self.w, self.y+self.h) +
                     (self.x,        self.y+self.h)
             ),
+            ('c4B', self.fill.rgba() * 4)
+        )
+        rect_vertices.draw(pyglet.gl.GL_QUADS)
+
+        rect_vertices.colors = self.stroke.rgba() * 4
+        rect_vertices.draw(pyglet.gl.GL_LINE_LOOP)
+
+
+# =========================== NEW GRAPHICS MODULE ============================
+
+class ColoredRectangle(Rectangle):
+    def __init__(self, pos, dimensions, offset=Point(0.0,0.0), fill=Color(255,0,0), stroke=Color(0,0,0)):
+        super().__init__(pos=pos, dimensions=dimensions, offset=offset)
+        self.stroke = Color(*stroke)
+        self.fill = Color(*fill)
+
+    def set_fill(self, fill):
+        self.fill = Color(*fill)
+
+    def draw(self):
+        pyglet.gl.glLineWidth(4)
+        points = []
+        for point in self.points():
+            points += point.xy()
+        rect_vertices = pyglet.graphics.vertex_list(4,
+            ('v2f', points),
             ('c4B', self.fill * 4)
         )
         rect_vertices.draw(pyglet.gl.GL_QUADS)

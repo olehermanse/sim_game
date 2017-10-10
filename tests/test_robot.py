@@ -26,10 +26,10 @@ def dna_methods():
     dna.set(size=0.2, red=r, ratio=0.4)
     dna.set_bytes(red=255, green=0, blue=50, size=200)
 
-    r,g,b,a = dna.get_color()
+    r,g,b,a = dna.rgba()
     dna.set_bytes(red=r, green=g, blue=b)
     dna.randomize()
-    r,g,b,a = dna.get_color()
+    r,g,b,a = dna.rgba()
     dna.set_bytes(red=r, green=g, blue=b)
 
     s = dna.get_mapped_real("size", 0, 100)

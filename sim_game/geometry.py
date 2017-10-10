@@ -42,6 +42,9 @@ class Rectangle:
         self.dimensions = dimensions
         self.offset     = offset
 
+    def set_pos(self, x, y):
+        self.position.set(x,y)
+
     def xy(self):
         return self.position.xy()
 

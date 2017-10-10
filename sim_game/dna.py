@@ -93,7 +93,7 @@ class DNA(UserDict):
             else:
                 self.set_byte(key, value)
 
-    def get_color(self):
+    def rgba(self):
         return (
             self.get_byte("red"),
             self.get_byte("green"),
