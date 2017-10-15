@@ -44,6 +44,7 @@ class Robot(PhysicsObject):
         self.eye = ColoredRectangle(dimensions=(width*0.6, height*0.2), offset=(0, eye_offset))
         self.eye.set_fill((0,255,0,255))
         self.body_parts = [self.body, self.head, self.eye]
+        self.set_pos(*self.pos.xy())
         self.targetx = random.uniform(0, self.world.w)
         self.targety = random.uniform(0, self.world.h)
         self.limits = None

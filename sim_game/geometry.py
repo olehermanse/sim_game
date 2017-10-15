@@ -61,20 +61,26 @@ class Rectangle:
         y += oy
         return x,y
 
-    def points(self):
+    def top_left(self):
         x,y = self.offset_xy()
         w,h = self.dimensions.xy()
         x,y = x-w/2, y-h/2
         ax, ay = self.anchor.xy()
         x = x + ax * w/2
         y = y + ay * h/2
+        return x,y
+
+    def points(self):
+        x,y = self.top_left()
+        w,h = self.dimensions.xy()
         return (Point(x,     y),
                 Point(x + w, y),
                 Point(x + w, y + h),
                 Point(x,     y + h))
 
     def contains_point(self, point):
-        sx,sy = self.offset_xy()
+        point = Point(*point)
+        sx,sy = self.top_left()
         sw,sh = self.dimensions.xy()
 
         x,y = point.position()

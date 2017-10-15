@@ -116,11 +116,20 @@ class ColoredRectangle(Rectangle):
         super().__init__(pos=pos, dimensions=dimensions, offset=offset, anchor=anchor)
         self.stroke = Color(*stroke)
         self.fill = Color(*fill)
+        self.enabled = True
 
     def set_fill(self, fill):
         self.fill = Color(*fill)
 
+    def enable(self):
+        self.enabled = True
+
+    def disable(self):
+        self.enabled = False
+
     def draw(self):
+        if not self.enabled:
+            return
         pyglet.gl.glLineWidth(4)
         points = []
         for point in self.points():
