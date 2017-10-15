@@ -32,15 +32,21 @@ class Point:
     def __sub__(self, other):
         return Point(self.x-other.x, self.y-other.y)
 
+    def __getitem__(self, key):
+        if type(key) is not int:
+            raise TypeError
+        return self.xy()[key]
+
     def distance(self, other):
         x,y = self.x - other.x, self.y-other.y
         return math.sqrt(x**2 + y**2)
 
 class Rectangle:
-    def __init__(self, pos, dimensions, offset=Point(0.0,0.0)):
-        self.position   = pos
-        self.dimensions = dimensions
-        self.offset     = offset
+    def __init__(self, pos, dimensions, anchor=(0,0), offset=(0,0)):
+        self.position   = Point(*pos)
+        self.dimensions = Point(*dimensions)
+        self.offset     = Point(*offset)
+        self.anchor     = Point(*anchor)
 
     def set_pos(self, x, y):
         self.position.set(x,y)
@@ -50,15 +56,18 @@ class Rectangle:
 
     def offset_xy(self):
         x,y = self.xy()
-        w,h = self.dimensions.xy()
         ox, oy = self.offset.xy()
-        x += w*ox/2
-        y += h*oy/2
+        x += ox
+        y += oy
         return x,y
 
     def points(self):
         x,y = self.offset_xy()
         w,h = self.dimensions.xy()
+        x,y = x-w/2, y-h/2
+        ax, ay = self.anchor.xy()
+        x = x + ax * w/2
+        y = y + ay * h/2
         return (Point(x,     y),
                 Point(x + w, y),
                 Point(x + w, y + h),

@@ -83,14 +83,3 @@ class TextObject(PhysicsObject):
         super().update(dt)
         self.label.x = self.x
         self.label.y = self.y
-
-class PhysicsRectangle(GraphicsRectangle, PhysicsObject):
-    def __init__(self, width, height, **kwargs):
-        """
-        super init chain like this:
-        PhysicsRectangle->Rectangle->PhysicsObject->GraphicsObject
-        """
-        GraphicsRectangle.__init__(self, width, height, **kwargs)
-
-    def update(self, dt):
-        super().update(dt)

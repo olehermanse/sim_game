@@ -12,8 +12,9 @@ except:
     print("Warning: could not import pyglet.")
     print("This is acceptable for tests, but rendering will not work.")
 
-from sim_game.graphics import GraphicsRectangle
-from sim_game.physics import PhysicsRectangle
+from sim_game.geometry import Point
+from sim_game.graphics import GraphicsRectangle, ColoredRectangle
+from sim_game.physics import PhysicsObject
 from sim_game.dna import DNA
 from collections import UserDict
 import random
@@ -23,21 +24,24 @@ def distance(x1,y1,x2,y2):
     return math.sqrt((x2-x1)**2 + (y2-y1)**2)
 
 # TODO: Separate out a cluster object class for multiple rect objects like this
-class Robot(PhysicsRectangle):
-    def __init__(self, world, *args, dna=None, **kwargs):
+class Robot(PhysicsObject):
+    def __init__(self, world, pos, dna=None):
         if not dna:
             self.dna = DNA()
         else:
             self.dna = dna
         self.world = world
+        self.pos = Point(*pos)
         ratio = (1/2**(self.dna.get_mapped_real("ratio",-1,1)))
         width = self.dna.get_mapped_real("size",50,100)
         height = width*ratio
-        super().__init__(width, height, *args, **kwargs)
-        self.body = GraphicsRectangle(width/3, height/3, *args, **kwargs)
-        self.head = GraphicsRectangle(width*0.8, height*0.8, *args, **kwargs)
+        super().__init__(pos=pos)
+        self.body = ColoredRectangle(dimensions=(width/3, height/3))
+        self.body.set_fill((64,64,64))
+        self.head = ColoredRectangle(dimensions=(width*0.8, height*0.8), anchor=(0, 1))
         self.head.set_fill(self.dna.rgba())
-        self.eye = GraphicsRectangle(width*0.6, height*0.2, *args, **kwargs)
+        eye_offset = 2 * self.head.dimensions[1] / 3
+        self.eye = ColoredRectangle(dimensions=(width*0.6, height*0.2), offset=(0, eye_offset))
         self.eye.set_fill((0,255,0,255))
         self.body_parts = [self.body, self.head, self.eye]
         self.targetx = random.uniform(0, self.world.w)
@@ -58,26 +62,15 @@ class Robot(PhysicsRectangle):
         p.play()
 
     def set_pos(self, x,y):
-        dx = x - self.x
-        dy = y - self.y
-        self.move_pos(dx,dy)
-
-    def set_vel(self, dx, dy):
-        super().set_vel(dx,dy)
-        # for part in self.body_parts:
-        #     part.set_vel(dx,dy)
-
-    def set_acc(self, ddx, ddy):
-        super().set_acc(ddx,ddy)
-        # for part in self.body_parts:
-        #     part.set_acc(ddx,ddy)
+        self.x = x
+        self.y = y
+        self.pos.set(x,y)
+        for b in self.body_parts:
+            b.set_pos(*self.pos)
 
     def move_pos(self, dx, dy):
         super().move_pos(dx,dy)
-
-        self.body.set_pos(self.x, self.y)
-        self.head.set_pos(self.x,self.y+self.h/2)
-        self.eye.set_pos(self.x,self.y+self.h/2+self.h/6)
+        self.set_pos(self.x, self.y)
 
     def draw(self):
         for part in self.body_parts:

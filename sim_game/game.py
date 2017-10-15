@@ -32,8 +32,7 @@ class Game:
         dna = None
         if len(self.robots) > 1:
             dna = self.robots[0].dna.combine(self.robots[1].dna)
-        r = Robot(self.world, pos=(x,y), centered=True, dna=dna,
-                  stroke=(0,0,0,255), fill=(128,128,128,255))
+        r = Robot(self.world, pos=(x,y), dna=dna)
         self.robots.append(r)
 
     # TODO: change to batch drawing for performance

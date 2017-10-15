@@ -112,8 +112,8 @@ class GraphicsRectangle(GraphicsObject):
 # =========================== NEW GRAPHICS MODULE ============================
 
 class ColoredRectangle(Rectangle):
-    def __init__(self, pos, dimensions, offset=Point(0.0,0.0), fill=Color(255,0,0), stroke=Color(0,0,0)):
-        super().__init__(pos=pos, dimensions=dimensions, offset=offset)
+    def __init__(self, dimensions, *, pos=(0,0),  anchor=(0,0), offset=(0,0), fill=(255,0,0), stroke=(0,0,0)):
+        super().__init__(pos=pos, dimensions=dimensions, offset=offset, anchor=anchor)
         self.stroke = Color(*stroke)
         self.fill = Color(*fill)
 
@@ -127,9 +127,9 @@ class ColoredRectangle(Rectangle):
             points += point.xy()
         rect_vertices = pyglet.graphics.vertex_list(4,
             ('v2f', points),
-            ('c4B', self.fill * 4)
+            ('c4B', self.fill.rgba() * 4)
         )
         rect_vertices.draw(pyglet.gl.GL_QUADS)
 
-        rect_vertices.colors = self.stroke * 4
+        rect_vertices.colors = self.stroke.rgba() * 4
         rect_vertices.draw(pyglet.gl.GL_LINE_LOOP)
