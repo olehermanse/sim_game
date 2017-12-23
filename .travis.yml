@@ -27,7 +27,7 @@ matrix:
 install: ./travis/install.sh
 
 script:
-    - make dir_test
+    - make check
     - py.test
 
 branches:

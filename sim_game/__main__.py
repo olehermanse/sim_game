@@ -13,7 +13,7 @@ import sys
 package_location = abspath(join(dirname(realpath(__file__)) , ".."))
 sys.path.insert(0, package_location)
 
-from game import Game
+from sim_game.game import Game
 
 try:
     import pyglet
