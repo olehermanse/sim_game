@@ -14,7 +14,23 @@ except:
     print("Warning: could not import pyglet.")
     print("This is acceptable for tests, but rendering will not work.")
 
+from sim_game.geometry import limit, Rectangle, Point
+
 class Color:
+    def __init__(self, r,g,b,a=255):
+        self.r = r
+        self.g = g
+        self.b = b
+        self.a = a
+
+    def rgba(self):
+        return (self.r, self.g, self.b, self.a)
+
+    def __getitem__(self, key):
+        if type(key) is not int:
+            raise TypeError
+        return self.rgba()[key]
+
     colors = {
         "red":   (255,0,0,255),
         "green": (0,255,0,255),
@@ -22,9 +38,10 @@ class Color:
         "white": (255,255,255,255),
         "black": (0,0,0,255)
     }
+
     @classmethod
     def get(cls, name):
-        return cls.colors[name]
+        return Color(cls.colors[name])
 
 class Renderer:
     @staticmethod
@@ -55,101 +72,17 @@ class GraphicsObject:
     def update(self, dt):
         raise NotImplementedError
 
-    def chain_print(self):
-        return "GraphicsObject"
-
-def limit(number, lower, upper):
-    assert lower < upper or (lower is None or upper is None)
-    if lower and number < lower:
-        number = lower
-    if upper and number > upper:
-        number = upper
-    # TODO: remove these asserts and make tests
-    assert number <= upper or not upper
-    assert number >= lower or not lower
-    return number
-
-class PhysicsObject(GraphicsObject):
-    def __init__(self, pos=(0,0), vel=(0,0), acc=(0,0), limits=None):
-        GraphicsObject.set_pos(self, pos[0],pos[1])
-        PhysicsObject.set_vel(self, vel[0],vel[1])
-        PhysicsObject.set_acc(self, acc[0],acc[1])
-        self.limits = limits
-
-    def set_vel(self, dx, dy):
-        self.dx = float(dx)
-        self.dy = float(dy)
-
-    def set_acc(self, ddx, ddy):
-        self.ddx = float(ddx)
-        self.ddy = float(ddy)
-
-    def apply_limits(self):
-        if not self.limits:
-            return
-        for var, lim in self.limits.items():
-            self.__dict__[var] = limit(self.__dict__[var], *lim)
-
-
-    # Note: if you don't need acceleration and velocity
-    #       simply call set_pos instead
-    def update(self, dt):
-        self.apply_limits()
-        s = self
-        dt = float(dt)
-        # Do all calculations first (right side) then assign (left side):
-        x, y, dx, dy = float(s.x  + dt*s.dx),  \
-                       float(s.y  + dt*s.dy),  \
-                       float(s.dx + dt*s.ddx), \
-                       float(s.dy + dt*s.ddy)
-        # Sub classes can override these methods, like robot does:
-        self.set_vel(dx,dy)
-        self.set_pos(x,y)
-        self.apply_limits()
-
-    def chain_print(self):
-        return "PhysicsObject->" + super().chain_print()
-
-# TODO: Make this inherit from Rectangle
-class SpriteObject(PhysicsObject):
-    def __init__(self, path, pos=(0,0), vel=(0,0), acc=(0,0), center=False):
-        super().__init__(pos, vel, acc)
-        self.image = image(path)
-        self.width, self.height = self.image.width, self.image.height
-        self.center = center
-
-    def draw(self):
-        if self.center:
-            self.image.blit(self.x-self.width/2, self.y-self.height/2)
-        else:
-            self.image.blit(self.x, self.y)
-
-class TextObject(PhysicsObject):
-    def __init__(self, text, size, pos=(0,0), vel=(0,0), acc=(0,0)):
-        self.label = Label(text, font_name="Arial", font_size=size,
-                                 x=pos[0], y=pos[1],
-                                 anchor_x="center", anchor_y="center")
-        super().__init__(pos=pos, vel=vel, acc=acc)
-
-    def draw(self):
-        self.label.draw()
-
-    def update(self, dt):
-        super().update(dt)
-        self.label.x = self.x
-        self.label.y = self.y
-
 #TODO: make colored rect separate class
-class Rectangle(GraphicsObject):
+class GraphicsRectangle(GraphicsObject):
     def __init__(self, width, height, fill=(128,128,128,255), stroke=(0,0,0,0), pos=(0,0), vel=(0,0), acc=(0,0), centered=False):
+        self.stroke = Color(*stroke)
+        self.fill = Color(*fill)
         self.centered = centered
         self.w = width
         self.h = height
         super().__init__(pos=pos)
         if centered:
-            Rectangle.set_pos(self, pos[0], pos[1])
-        self.stroke = stroke
-        self.fill = fill
+            GraphicsRectangle.set_pos(self, pos[0], pos[1])
 
     def set_pos(self, x,y):
         super().set_pos(x,y)
@@ -158,7 +91,7 @@ class Rectangle(GraphicsObject):
             self.y -= self.h/2
 
     def set_fill(self, fill):
-        self.fill = fill
+        self.fill = Color(*fill)
 
     def draw(self):
         pyglet.gl.glLineWidth(4)
@@ -168,26 +101,44 @@ class Rectangle(GraphicsObject):
                     (self.x+self.w, self.y+self.h) +
                     (self.x,        self.y+self.h)
             ),
-            ('c4B', self.fill * 4)
+            ('c4B', self.fill.rgba() * 4)
         )
         rect_vertices.draw(pyglet.gl.GL_QUADS)
 
-        rect_vertices.colors = self.stroke * 4
+        rect_vertices.colors = self.stroke.rgba() * 4
         rect_vertices.draw(pyglet.gl.GL_LINE_LOOP)
 
-    def chain_print(self):
-        return "Rectangle->" + super().chain_print()
 
-class PhysicsRectangle(Rectangle, PhysicsObject):
-    def __init__(self, width, height, **kwargs):
-        """
-        super init chain like this:
-        PhysicsRectangle->Rectangle->PhysicsObject->GraphicsObject
-        """
-        Rectangle.__init__(self, width, height, **kwargs)
+# =========================== NEW GRAPHICS MODULE ============================
 
-    def update(self, dt):
-        super().update(dt)
+class ColoredRectangle(Rectangle):
+    def __init__(self, dimensions, *, pos=(0,0),  anchor=(0,0), offset=(0,0), fill=(255,0,0), stroke=(0,0,0)):
+        super().__init__(pos=pos, dimensions=dimensions, offset=offset, anchor=anchor)
+        self.stroke = Color(*stroke)
+        self.fill = Color(*fill)
+        self.enabled = True
 
-    def chain_print(self):
-        return "PhysicsRectangle->" + super().chain_print()
+    def set_fill(self, fill):
+        self.fill = Color(*fill)
+
+    def enable(self):
+        self.enabled = True
+
+    def disable(self):
+        self.enabled = False
+
+    def draw(self):
+        if not self.enabled:
+            return
+        pyglet.gl.glLineWidth(4)
+        points = []
+        for point in self.points():
+            points += point.xy()
+        rect_vertices = pyglet.graphics.vertex_list(4,
+            ('v2f', points),
+            ('c4B', self.fill.rgba() * 4)
+        )
+        rect_vertices.draw(pyglet.gl.GL_QUADS)
+
+        rect_vertices.colors = self.stroke.rgba() * 4
+        rect_vertices.draw(pyglet.gl.GL_LINE_LOOP)
